@@ -151,8 +151,8 @@ namespace SGCUCMAPI.Controllers
                     Documentos = convenioRequest.Documentos,
                     CondicionRenovacion = convenioRequest.CondicionRenovacion,
                     Estatus = convenioRequest.Estatus,
-                    FechaInicio = DateTime.ParseExact(convenioRequest.FechaInicio, "dd/MM/yy", null),
-                    FechaTermino = DateTime.ParseExact(convenioRequest.FechaTermino, "dd/MM/yy", null)
+                    FechaInicio = DateTime.ParseExact(convenioRequest.FechaInicio, "dd/MM/yyyy", null),
+                    FechaTermino = DateTime.ParseExact(convenioRequest.FechaTermino, "dd/MM/yyyy", null)
                 };
 
                 _context.Convenios.Add(convenio);
