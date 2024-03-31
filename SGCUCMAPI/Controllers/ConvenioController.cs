@@ -53,8 +53,8 @@ namespace SGCUCMAPI.Controllers
                     Documentos = c.Documentos,
                     Condicion_Renovacion = c.CondicionRenovacion,
                     Estatus = c.Estatus,
-                    Fecha_Inicio = c.FechaInicio.ToString("dd/MM/yy"),
-                    Fecha_Termino = c.FechaTermino.ToString("dd/MM/yy"),
+                    Fecha_Inicio = c.FechaInicio.ToString("dd/MM/yyyy"),
+                    Fecha_Termino = c.FechaTermino.ToString("dd/MM/yyyy"),
                     ID_Unidad_Gestora = c.IdUnidadGestora,
                 })
                 .ToListAsync();
@@ -201,8 +201,8 @@ namespace SGCUCMAPI.Controllers
             dbConvenio.Documentos = convenioRequest.Documentos;
             dbConvenio.CondicionRenovacion = convenioRequest.CondicionRenovacion;
             dbConvenio.Estatus = convenioRequest.Estatus;
-            dbConvenio.FechaInicio = DateTime.ParseExact(convenioRequest.FechaInicio, "dd/MM/yy", null);
-            dbConvenio.FechaTermino = DateTime.ParseExact(convenioRequest.FechaTermino, "dd/MM/yy", null);
+            dbConvenio.FechaInicio = DateTime.ParseExact(convenioRequest.FechaInicio, "dd/MM/yyyy", null);
+            dbConvenio.FechaTermino = DateTime.ParseExact(convenioRequest.FechaTermino, "dd/MM/yyyy", null);
 
             await _context.SaveChangesAsync();
 
