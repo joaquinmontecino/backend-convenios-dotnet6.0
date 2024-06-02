@@ -11,6 +11,8 @@ using System.Xml.Linq;
 using QuestPDF.Infrastructure;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using SGCUCMAPI.Utilities;
+using System.Text.Json;
 
 
 
@@ -233,6 +235,19 @@ namespace SGCUCMAPI.Controllers
         [HttpPost("generarInformePdf")]
         public IActionResult GenerarInformePdf([FromBody] List<Convenio> convenios)
         {
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters =
+                {
+                    new CustomDateTimeConverter()
+                }
+            };
+
+            var jsonString = JsonSerializer.Serialize(convenios, options);
+
+
             var stream = new MemoryStream();
             QuestPDF.Fluent.Document.Create(container =>
             {
@@ -248,7 +263,7 @@ namespace SGCUCMAPI.Controllers
                         col1.Item().AlignLeft().Text(txt =>
                         {
                             txt.Span("Fecha: ").SemiBold().FontSize(11);
-                            txt.Span($"{DateTime.Now.ToString("dd/MM/yyyy")}").FontSize(11);
+                            txt.Span($"{DateTime.Now:dd/MM/yyyy}").FontSize(11);
                         });
                     });
 
@@ -332,9 +347,9 @@ namespace SGCUCMAPI.Controllers
                                 tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
                                  .Padding(2).Text(convenio.Estatus).FontSize(10);
                                 tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
-                                 .Padding(2).Text(convenio.FechaInicio.ToString()).FontSize(10);
+                                 .Padding(2).Text(convenio.FechaInicio.ToString("dd/MM/yyyy")).FontSize(10);
                                 tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
-                                 .Padding(2).Text(convenio.FechaTermino.ToString()).FontSize(10);
+                                 .Padding(2).Text(convenio.FechaTermino.ToString("dd/MM/yyyy")).FontSize(10);
 
                             }
                         });

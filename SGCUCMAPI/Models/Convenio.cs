@@ -1,4 +1,7 @@
-﻿namespace SGCUCMAPI.Models
+﻿using SGCUCMAPI.Utilities;
+using System.Text.Json.Serialization;
+
+namespace SGCUCMAPI.Models
 {
     public class Convenio
     {
@@ -14,7 +17,11 @@
         public string Documentos { get; set; } = string.Empty;
         public string CondicionRenovacion { get; set; } = string.Empty;
         public string Estatus { get; set; } = string.Empty;
+        
+        [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime FechaInicio { get; set; }
+        
+        [JsonConverter(typeof(CustomDateTimeConverter))] 
         public DateTime FechaTermino { get; set; }
 
     }
