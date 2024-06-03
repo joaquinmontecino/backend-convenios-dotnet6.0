@@ -365,10 +365,150 @@ namespace SGCUCMAPI.Controllers
             return File(stream, "application/pdf", "informe.pdf");
         }
 
+        [HttpPost("generarInformePdf2")]
+        public IActionResult GenerarInformePdf2([FromBody] List<ConvenioGetResponse> convenios)
+        {
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters =
+                {
+                    new CustomDateTimeConverter()
+                }
+            };
+
+            var jsonString = JsonSerializer.Serialize(convenios, options);
+
+
+            var stream = new MemoryStream();
+            QuestPDF.Fluent.Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.Legal.Landscape());
+                    page.Margin(1, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontFamily("Calibri"));
+
+                    page.Header().ShowOnce().Column(col1 =>
+                    {
+                        col1.Item().AlignCenter().Text("Informe de Convenios").SemiBold().FontSize(16);
+                        col1.Item().AlignLeft().Text(txt =>
+                        {
+                            txt.Span("Fecha: ").SemiBold().FontSize(11);
+                            txt.Span($"{DateTime.Now:dd/MM/yyyy}").FontSize(11);
+                        });
+                    });
+
+                    page.Content().PaddingVertical(10).Column(col2 =>
+                    {
+
+                        col2.Item().Table(tabla =>
+                        {
+                            tabla.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+
+                            });
+
+                            tabla.Header(header =>
+                            {
+                                header.Cell().BorderLeft(0.5f).BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                                .Padding(2).Text("Nombre");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Tipo");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Movilidad");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Vigencia");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Año Firma");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Tipo Firma");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Cupos");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Renovacion");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Estatus");
+
+                                header.Cell().BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Inicio");
+
+                                header.Cell().BorderRight(0.5f).BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#A9A9A9").Background("#E6E6E6")
+                               .Padding(2).Text("Termino");
+                            });
+
+                            for (int i = 0; i < convenios.Count; i++)
+                            {
+                                var convenio = convenios[i];
+
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Nombre_Convenio).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Tipo_Convenio).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Movilidad).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Vigencia).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Anio_Firma.ToString()).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Tipo_Firma).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Cupos.ToString()).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Condicion_Renovacion).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Estatus).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Fecha_Inicio).FontSize(10);
+                                tabla.Cell().Border(0.5f).BorderColor("#A9A9A9")
+                                 .Padding(2).Text(convenio.Fecha_Termino).FontSize(10);
+
+                            }
+                        });
+                    });
+
+                });
+            }).GeneratePdf(stream);
+
+            stream.Position = 0;
+            var bytes = stream.ToArray();
+            var base64String = Convert.ToBase64String(bytes);
+
+            return File(stream, "application/pdf", "informe.pdf");
+        }
+
     }
 
 
-    public class ConvenioPostRequest
+
+
+
+
+
+
+
+public class ConvenioPostRequest
     {
         [JsonPropertyName("id_unidad_gestora")]
         public int IdUnidadGestora { get; set; }
