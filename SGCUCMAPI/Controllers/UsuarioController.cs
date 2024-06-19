@@ -41,7 +41,7 @@ namespace SGCUCMAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<ActionResult<List<Usuario>>> RegisterUsuario (Usuario usuario)
         {
             _context.Usuarios.Add(usuario);
@@ -50,13 +50,30 @@ namespace SGCUCMAPI.Controllers
             return Ok(usuario);
         }
 
-        /*
-        [HttpPost]
-        public async Task<ActionResult<List<Usuario>>> LoginUsuario ()
+
+        [HttpPost("login")]
+        public async Task<ActionResult<List<Usuario>>> LoginUsuario(credencialesDTO credenciales)
         {
-            
+            var dbUsuario = await _context.Usuarios
+                .Where(u => u.Email == credenciales.Email)
+                .SingleOrDefaultAsync();
+
+            if (dbUsuario == null || dbUsuario.Contrasena != credenciales.Contrasena)
+            {
+                return Unauthorized("Usuario o contraseña incorrecto");
+            }
+
+            var usuarioRespuesta = new usuarioResponse
+            {
+                ID_USUARIO = dbUsuario.IdUsuario,
+                EMAIL = dbUsuario.Email,
+                PRIVILEGIOS = dbUsuario.Privilegios
+            };
+
+            return Ok(usuarioRespuesta);
+
         }
-        */
+        
 
         [HttpPut("{id}")]
         public async Task<ActionResult<List<Usuario>>> UpdateUsuario(int id, Usuario usuario)
@@ -95,5 +112,18 @@ namespace SGCUCMAPI.Controllers
         }
 
 
+    }
+
+    public class credencialesDTO
+    {
+        public string? Email { get; set; }
+        public string? Contrasena { get; set; }
+    }
+
+    public class usuarioResponse
+    {
+        public int ID_USUARIO { get; set; }
+        public string? EMAIL { get; set; }
+        public string? PRIVILEGIOS { get; set; }
     }
 }
